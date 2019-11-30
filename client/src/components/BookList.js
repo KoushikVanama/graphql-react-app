@@ -1,23 +1,34 @@
 import React from 'react';
-import { gql } from 'apollo-boost';
 import { graphql } from 'react-apollo';
-
-const getBooksQuery = gql`
-  {
-    books{
-      name
-      id
-    }
-  }
-`;
+import { getBooksQuery } from './../queries/queries';
+import BookDetails from './BookDetails';
 
 class BookList extends React.Component{
+  state = {
+    selected: null
+  };
+  displayBooks(){
+    var { data } = this.props;
+    if(data.loading){
+      return(<div>Loading books</div>);
+    } else {
+      return data.books.map((book) => {
+        return(
+          <li key={book.id} onClick={(e) => {this.setState({ selected: book.id })}}>{ book.name }</li>
+        );
+      });
+    }
+  }
   render(){
     console.log(this.props);
+    const { selected } = this.state;
     return (
-      <ul id="book-list">
-        <li>Book Name</li>
-      </ul>
+      <div>
+        <ul id="book-list">
+          {this.displayBooks()}
+        </ul>
+        <BookDetails bookId={selected} />
+      </div>
     );
   }
 }
